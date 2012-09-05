@@ -19,6 +19,9 @@ class SkypeAdapter extends Adapter
 
     @skype = require('child_process').spawn(Path.join(__dirname, 'skype.py'))
     @skype.stdout.on 'data', (data) =>
+      if @robot.debug
+        @robot.logger.debug data.toString()
+
       decoded = JSON.parse(data.toString())
       user = self.userForName decoded.user
       unless user?
@@ -29,8 +32,7 @@ class SkypeAdapter extends Adapter
       return unless decoded.message
       @receive new TextMessage user, decoded.message
     @skype.stderr.on 'data', (data) =>
-      console.log "ERR"
-      console.log data.toString()
+      @robot.logger.error data.toString()
     @skype.on 'exit', (code) =>
       console.log('child process exited with code ' + code)
     @skype.on "uncaughtException", (err) =>

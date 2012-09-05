@@ -4,7 +4,16 @@ import sys
 import json
 import os
 
+import logging
+logging.basicConfig(filename=os.path.abspath('log/skype.log'), level=logging.DEBUG)
+
 def on_message(message, status):
+    json_string = json.dumps({
+        'user': message.Sender.Handle,
+        'message': message.Body,
+        'room': message.Chat.Name,
+    })
+    logging.debug(json_string)
     if status == Skype4Py.cmsReceived:
         json_string = json.dumps({
             'user': message.Sender.Handle,
